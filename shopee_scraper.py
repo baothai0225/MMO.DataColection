@@ -7,7 +7,6 @@ from typing import Optional, Dict, List, Any
 from tls_client_wrapper import TLSClientWrapper
 from config import Config
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -50,17 +49,29 @@ class ShopeeDataScraper:
         Search for products on Shopee
         
         Args:
-            keyword: Search keyword
-            limit: Maximum number of results
+            keyword: Search keyword (will be URL-encoded by the HTTP client)
+            limit: Maximum number of results (must be positive)
             
         Returns:
             List of product data or None if failed
         """
+        # Validate inputs
+        if not keyword or not keyword.strip():
+            logger.error("Keyword cannot be empty")
+            return None
+        
+        if not isinstance(limit, int) or limit <= 0:
+            logger.error(f"Invalid limit value: {limit}. Must be a positive integer")
+            return None
+        
+        if limit > 100:
+            logger.warning(f"Limit {limit} exceeds maximum recommended value of 100")
+        
         try:
             # Shopee API endpoint for search (example)
             search_url = f"{self.base_url}api/v4/search/search_items"
             params = {
-                'keyword': keyword,
+                'keyword': keyword.strip(),
                 'limit': limit,
                 'newest': 0,
                 'order': 'desc',
@@ -90,12 +101,21 @@ class ShopeeDataScraper:
         Get detailed information about a specific product
         
         Args:
-            shop_id: Shop ID
-            item_id: Product/Item ID
+            shop_id: Shop ID (must be a positive integer)
+            item_id: Product/Item ID (must be a positive integer)
             
         Returns:
             Product details or None if failed
         """
+        # Validate inputs
+        if not isinstance(shop_id, int) or shop_id <= 0:
+            logger.error(f"Invalid shop_id: {shop_id}. Must be a positive integer")
+            return None
+        
+        if not isinstance(item_id, int) or item_id <= 0:
+            logger.error(f"Invalid item_id: {item_id}. Must be a positive integer")
+            return None
+        
         try:
             # Shopee API endpoint for product details (example)
             detail_url = f"{self.base_url}api/v4/item/get"

@@ -1,5 +1,5 @@
 """
-Configuration module for MMO Data Collection
+Configuration module for the data collection project
 """
 import os
 from dotenv import load_dotenv
@@ -17,6 +17,7 @@ class Config:
     
     # TLS Client Configuration
     TLS_CLIENT_IDENTIFIER = os.getenv('TLS_CLIENT_IDENTIFIER', 'chrome_120')
+    USER_AGENT = os.getenv('USER_AGENT', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
     
     # Data Collection Settings
     MAX_RETRIES = int(os.getenv('MAX_RETRIES', '3'))
@@ -29,7 +30,7 @@ class Config:
     def get_headers(cls):
         """Get default headers for requests"""
         return {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': cls.USER_AGENT,
             'Accept': 'application/json, text/plain, */*',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',

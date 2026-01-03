@@ -3,11 +3,11 @@ API Client for invoking internal APIs
 """
 import json
 import logging
+import re
 from typing import Optional, Dict, Any
 from tls_client_wrapper import TLSClientWrapper
 from config import Config
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +36,11 @@ class InternalAPIClient:
         Returns:
             API response or None if failed
         """
+        # Validate endpoint
+        if not self._validate_endpoint(endpoint):
+            logger.error(f"Invalid endpoint: {endpoint}")
+            return None
+        
         try:
             url = f"{self.api_url.rstrip('/')}/{endpoint.lstrip('/')}"
             logger.info(f"Sending data to internal API: {url}")
@@ -52,7 +57,7 @@ class InternalAPIClient:
                     return {
                         'status_code': response.status_code,
                         'text': response.text,
-                        'success': True
+                        'json_parsed': False
                     }
             
             return None
@@ -60,6 +65,29 @@ class InternalAPIClient:
         except Exception as e:
             logger.error(f"Error sending data to API: {str(e)}")
             return None
+    
+    def _validate_endpoint(self, endpoint: str) -> bool:
+        """
+        Validate endpoint to prevent path traversal and other security issues
+        
+        Args:
+            endpoint: Endpoint to validate
+            
+        Returns:
+            True if endpoint is valid, False otherwise
+        """
+        if not endpoint:
+            return False
+        
+        # Check for path traversal attempts
+        if '..' in endpoint or '\\' in endpoint:
+            return False
+        
+        # Check for valid characters (alphanumeric, dash, underscore, slash)
+        if not re.match(r'^[a-zA-Z0-9/_-]+$', endpoint.strip('/')):
+            return False
+        
+        return True
     
     def get_data(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
         """
@@ -72,6 +100,11 @@ class InternalAPIClient:
         Returns:
             API response or None if failed
         """
+        # Validate endpoint
+        if not self._validate_endpoint(endpoint):
+            logger.error(f"Invalid endpoint: {endpoint}")
+            return None
+        
         try:
             url = f"{self.api_url.rstrip('/')}/{endpoint.lstrip('/')}"
             logger.info(f"Getting data from internal API: {url}")
@@ -88,7 +121,7 @@ class InternalAPIClient:
                     return {
                         'status_code': response.status_code,
                         'text': response.text,
-                        'success': True
+                        'json_parsed': False
                     }
             
             return None

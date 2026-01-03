@@ -2,9 +2,8 @@
 Main Data Collection Module
 Orchestrates data collection from websites and API invocation
 """
-import json
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from shopee_scraper import ShopeeDataScraper
 from api_client import InternalAPIClient
 
@@ -70,6 +69,15 @@ class DataCollectionPipeline:
         Returns:
             True if successful, False otherwise
         """
+        # Validate keyword
+        if not keyword or not keyword.strip():
+            logger.error("Keyword cannot be empty")
+            return False
+        
+        if len(keyword) > 200:
+            logger.error("Keyword exceeds maximum length of 200 characters")
+            return False
+        
         try:
             logger.info(f"Searching for products with keyword: {keyword}")
             
