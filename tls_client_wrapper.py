@@ -2,7 +2,6 @@
 TLS Client Wrapper for accessing websites with enhanced security
 """
 import time
-import json
 import logging
 from typing import Optional, Dict, Any
 import tls_client
