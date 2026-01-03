@@ -5,6 +5,7 @@ from tls_client_wrapper import TLSClientWrapper
 from shopee_scraper import ShopeeDataScraper
 from api_client import InternalAPIClient
 from data_collection import DataCollectionPipeline
+from config import Config
 
 
 def test_tls_client():
@@ -12,7 +13,7 @@ def test_tls_client():
     print("Testing TLS Client Wrapper...")
     client = TLSClientWrapper()
     assert client.session is not None
-    assert client.client_identifier == 'chrome_120'
+    assert client.client_identifier == Config.TLS_CLIENT_IDENTIFIER
     client.close()
     print("✓ TLS Client Wrapper test passed")
 
@@ -22,7 +23,7 @@ def test_shopee_scraper():
     print("Testing Shopee Scraper...")
     scraper = ShopeeDataScraper()
     assert scraper.client is not None
-    assert scraper.base_url == 'https://shopee.vn/'
+    assert scraper.base_url == Config.SHOPEE_VN_URL
     scraper.close()
     print("✓ Shopee Scraper test passed")
 
