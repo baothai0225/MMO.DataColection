@@ -50,7 +50,7 @@ class ShopeeDataScraper:
         
         Args:
             keyword: Search keyword (will be URL-encoded by the HTTP client)
-            limit: Maximum number of results (must be positive)
+            limit: Maximum number of results (must be positive, max 100)
             
         Returns:
             List of product data or None if failed
@@ -65,7 +65,8 @@ class ShopeeDataScraper:
             return None
         
         if limit > 100:
-            logger.warning(f"Limit {limit} exceeds maximum recommended value of 100")
+            logger.error(f"Limit {limit} exceeds maximum allowed value of 100")
+            return None
         
         try:
             # Shopee API endpoint for search (example)
